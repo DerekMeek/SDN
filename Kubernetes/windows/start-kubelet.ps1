@@ -90,7 +90,7 @@ $podCIDR = Get-PodCIDR
 
 # startup the service
 $podGW = Get-PodGateway $podCIDR
-ipmo C:\k\hns.psm1
+ipmo C:\k\hns.psm1  -DisableNameChecking
 
 # Create a L2Bridge to trigger a vSwitch creation. Do this only once
 if(!(Get-HnsNetwork | ? Name -EQ "External"))
@@ -121,7 +121,8 @@ if ($IsolationType -ieq "process")
         --kubeconfig=c:\k\config --hairpin-mode=promiscuous-bridge `
         --image-pull-progress-deadline=20m --cgroups-per-qos=false `
         --log-dir=c:\k --logtostderr=false --enforce-node-allocatable="" `
-        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config"
+        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
+        --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
 }
 elseif ($IsolationType -ieq "hyperv")
 {
@@ -133,5 +134,6 @@ elseif ($IsolationType -ieq "hyperv")
         --image-pull-progress-deadline=20m --cgroups-per-qos=false `
         --feature-gates=HyperVContainer=true --enforce-node-allocatable="" `
         --log-dir=c:\k --logtostderr=false `
-        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config"
+        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
+        --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
 }

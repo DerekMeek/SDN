@@ -70,7 +70,7 @@ powershell $BaseDir\start-kubelet.ps1 -RegisterOnly
 # Open firewall for Overlay traffic
 New-NetFirewallRule -Name OverlayTraffic4789UDP -Description "Overlay network traffic UDP" -Action Allow -LocalPort 4789 -Enabled True -DisplayName "Overlay Traffic 4789 UDP" -Protocol UDP -ErrorAction SilentlyContinue
 
-ipmo C:\k\hns.psm1
+ipmo C:\k\hns.psm1 -DisableNameChecking
 
 # Create a L2Bridge to trigger a vSwitch creation. Do this only once
 if(!(Get-HnsNetwork | ? Name -EQ "External"))

@@ -79,7 +79,7 @@ $NetworkMode = "L2Bridge"
 $NetworkName = "cbr0"
 CleanupOldNetwork $NetworkName
 powershell $BaseDir\start-kubelet.ps1 -RegisterOnly
-ipmo C:\k\hns.psm1
+ipmo C:\k\hns.psm1 -DisableNameChecking
 
 # Create a L2Bridge to trigger a vSwitch creation. Do this only once as it causes network blip
 if(!(Get-HnsNetwork | ? Name -EQ "External"))

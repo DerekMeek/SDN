@@ -40,7 +40,7 @@ ipmo $WorkingDir\helper.psm1
 # Add routes to all POD networks on the Bridge endpoint nic
 Add-RouteToPodCIDR -nicName $vnicName
 
-$na = Get-NetAdapter | ? Name -Like "vEthernet (Ethernet*" | ? Status -EQ Up
+$na = Get-NetAdapter -InterfaceIndex (Get-WmiObject win32_networkadapterconfiguration | Where-Object {$_.defaultipgateway -ne $null}).InterfaceIndex
 if (!$na)
 {
     Write-Error "Do you have a virtual adapter configured? Couldn't find one!"

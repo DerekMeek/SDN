@@ -67,7 +67,7 @@ function RegisterNode()
 {
     if (!(IsNodeRegistered))
     {
-        $argList = @("--hostname-override=$(hostname)","--pod-infra-container-image=kubeletwin/pause","--resolv-conf=""""", "--cgroups-per-qos=false", "--enforce-node-allocatable=""""","--kubeconfig=c:\k\config")
+        $argList = @("--hostname-override=$(hostname)","--pod-infra-container-image=kubeletwin/pause","--resolv-conf=""""", "--cgroups-per-qos=false", "--enforce-node-allocatable=""""","--kubeconfig=c:\k\config","--container-runtime=remote","--container-runtime-endpoint='npipe:////./pipe/containerd-containerd'")
         $process = Start-Process -FilePath c:\k\kubelet.exe -PassThru -ArgumentList $argList
 
         # Wait till the 
@@ -146,7 +146,7 @@ function Get-PodEndpointGateway($podCIDR)
 
 function Get-MgmtIpAddress()
 {
-    $na = Get-NetAdapter | ? Name -Like "vEthernet (Ethernet*" | ? Status -EQ Up
+    $na = Get-NetAdapter -InterfaceIndex (Get-WmiObject win32_networkadapterconfiguration | Where-Object {$_.defaultipgateway -ne $null}).InterfaceIndex
     return (Get-NetIPAddress -InterfaceAlias $na.ifAlias -AddressFamily IPv4).IPAddress
 }
 
@@ -196,7 +196,7 @@ function ConvertTo-MaskLength
 function
 Get-MgmtSubnet
 {
-    $na = Get-NetAdapter | ? Name -Like "vEthernet (Ethernet*" | ? Status -EQ Up
+    $na = Get-NetAdapter -InterfaceIndex (Get-WmiObject win32_networkadapterconfiguration | Where-Object {$_.defaultipgateway -ne $null}).InterfaceIndex
     if (!$na) {
       throw "Failed to find a suitable network adapter, check your network settings."
     }
@@ -209,7 +209,7 @@ Get-MgmtSubnet
 
 function Get-MgmtDefaultGatewayAddress()
 {
-    $na = Get-NetAdapter | ? Name -Like "vEthernet (Ethernet*"
+    $na = Get-NetAdapter -InterfaceIndex (Get-WmiObject win32_networkadapterconfiguration | Where-Object {$_.defaultipgateway -ne $null}).InterfaceIndex
     return  (Get-NetRoute -InterfaceAlias $na.ifAlias -DestinationPrefix "0.0.0.0/0").NextHop
 }
 

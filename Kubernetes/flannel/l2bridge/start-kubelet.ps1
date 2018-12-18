@@ -32,7 +32,7 @@ RegisterNode()
 {
     if (!(IsNodeRegistered))
     {
-        $argList = @("--hostname-override=$(hostname)","--pod-infra-container-image=kubeletwin/pause","--resolv-conf=""""", "--cgroups-per-qos=false", "--enforce-node-allocatable=""""","--kubeconfig=c:\k\config")
+        $argList = @("--hostname-override=$(hostname)","--pod-infra-container-image=kubeletwin/pause","--resolv-conf=""""", "--cgroups-per-qos=false", "--enforce-node-allocatable=""""","--kubeconfig=c:\k\config","--container-runtime=remote", "--container-runtime-endpoint='npipe:////./pipe/containerd-containerd'")
         $process = Start-Process -FilePath c:\k\kubelet.exe -PassThru -ArgumentList $argList
 
         # Wait till the 
@@ -101,7 +101,7 @@ ConvertTo-MaskLength
 function
 Get-MgmtSubnet
 {
-    $na = Get-NetAdapter | ? Name -Like "v$InterfaceName (Ethernet*"
+    $na = Get-NetAdapter -InterfaceIndex (Get-WmiObject win32_networkadapterconfiguration | Where-Object {$_.defaultipgateway -ne $null}).InterfaceIndex
     if (!$na) {
       throw "Failed to find a suitable network adapter, check your network settings."
     }
@@ -179,7 +179,8 @@ if ($IsolationType -ieq "process")
         --kubeconfig=c:\k\config --hairpin-mode=promiscuous-bridge `
         --image-pull-progress-deadline=20m --cgroups-per-qos=false `
         --log-dir=$LogDir --logtostderr=false --enforce-node-allocatable="" `
-        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config"
+        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
+        --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
 }
 elseif ($IsolationType -ieq "hyperv")
 {
@@ -191,5 +192,6 @@ elseif ($IsolationType -ieq "hyperv")
         --image-pull-progress-deadline=20m --cgroups-per-qos=false `
         --feature-gates=HyperVContainer=true --enforce-node-allocatable="" `
         --log-dir=$LogDir --logtostderr=false `
-        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config"
+        --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
+        --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
 }

@@ -120,20 +120,21 @@ Update-CNIConfig($podCIDR)
   "name": "<NetworkMode>",
   "type": "flannel",
   "delegate": {
-     "type": "win-bridge",
+    "ApiVersion": 2,
+    "type": "<BridgeCNI>",
       "dns" : {
         "Nameservers" : [ "10.96.0.10" ],
         "Search": [ "svc.cluster.local" ]
       },
-      "policies" : [
+      "HcnPolicyArgs" : [
         {
-          "Name" : "EndpointPolicy", "Value" : { "Type" : "OutBoundNAT", "ExceptionList": [ "<ClusterCIDR>", "<ServerCIDR>", "<MgmtSubnet>" ] }
+          "Type" : "OutBoundNAT", "Settings" : { "Exceptions": [ "<ClusterCIDR>", "<ServerCIDR>", "<MgmtSubnet>" ] }
         },
         {
-          "Name" : "EndpointPolicy", "Value" : { "Type" : "ROUTE", "DestinationPrefix": "<ServerCIDR>", "NeedEncap" : true }
+          "Type" : "SDNRoute", "Settings" : { "DestinationPrefix": "<ServerCIDR>", "NeedEncap" : true }
         },
         {
-          "Name" : "EndpointPolicy", "Value" : { "Type" : "ROUTE", "DestinationPrefix": "<MgmtIP>/32", "NeedEncap" : true }
+          "Type" : "SDNRoute", "Settings" : { "DestinationPrefix": "<MgmtIP>/32", "NeedEncap" : true }
         }
       ]
     }
@@ -146,12 +147,12 @@ Update-CNIConfig($podCIDR)
     $configJson.delegate.dns.Nameservers[0] = $KubeDnsServiceIP
     $configJson.delegate.dns.Search[0] = $KubeDnsSuffix
 
-    $configJson.delegate.policies[0].Value.ExceptionList[0] = $clusterCIDR
-    $configJson.delegate.policies[0].Value.ExceptionList[1] = $serviceCIDR
-    $configJson.delegate.policies[0].Value.ExceptionList[2] = Get-MgmtSubnet
+    $configJson.delegate.HcnPolicyArgs[0].Settings.Exceptions[0] = $clusterCIDR
+    $configJson.delegate.HcnPolicyArgs[0].Settings.Exceptions[1] = $serviceCIDR
+    $configJson.delegate.HcnPolicyArgs[0].Settings.Exceptions[2] = Get-MgmtSubnet
 
-    $configJson.delegate.policies[1].Value.DestinationPrefix  = $serviceCIDR
-    $configJson.delegate.policies[2].Value.DestinationPrefix  = "$(Get-MgmtIpAddress)/32"
+    $configJson.delegate.HcnPolicyArgs[1].Settings.DestinationPrefix  = $serviceCIDR
+    $configJson.delegate.HcnPolicyArgs[2].Settings.DestinationPrefix  = "$(Get-MgmtIpAddress)/32"
 
     if (Test-Path $CNIConfig) {
         Clear-Content -Path $CNIConfig

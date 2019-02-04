@@ -79,4 +79,5 @@ c:\k\kubelet.exe --hostname-override=$(hostname) --v=6 `
     --image-pull-progress-deadline=20m --cgroups-per-qos=false `
     --enforce-node-allocatable="" `
     --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
-    --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
+    --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd" `
+    --feature-gates=RuntimeClass=true

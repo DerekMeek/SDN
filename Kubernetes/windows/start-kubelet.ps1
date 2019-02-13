@@ -119,7 +119,7 @@ if ($IsolationType -ieq "process")
         --allow-privileged=true --enable-debugging-handlers `
         --cluster-dns=$KubeDnsServiceIp --cluster-domain=cluster.local `
         --kubeconfig=c:\k\config --hairpin-mode=promiscuous-bridge `
-        --image-pull-progress-deadline=20m --cgroups-per-qos=false `
+        --image-pull-progress-deadline=20m --runtime-request-timeout=20m --cgroups-per-qos=false `
         --log-dir=c:\k --logtostderr=false --enforce-node-allocatable="" `
         --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `
         --container-runtime=remote --container-runtime-endpoint="npipe:////./pipe/containerd-containerd" `
@@ -132,7 +132,7 @@ elseif ($IsolationType -ieq "hyperv")
         --allow-privileged=true --enable-debugging-handlers `
         --cluster-dns=$KubeDnsServiceIp --cluster-domain=cluster.local `
         --kubeconfig=c:\k\config --hairpin-mode=promiscuous-bridge `
-        --image-pull-progress-deadline=20m --cgroups-per-qos=false `
+        --image-pull-progress-deadline=20m --runtime-request-timeout=20m --cgroups-per-qos=false `
         --feature-gates=HyperVContainer=true --enforce-node-allocatable="" `
         --log-dir=c:\k --logtostderr=false `
         --network-plugin=cni --cni-bin-dir="c:\k\cni" --cni-conf-dir "c:\k\cni\config" `

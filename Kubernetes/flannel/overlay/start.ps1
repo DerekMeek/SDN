@@ -1,5 +1,5 @@
 ﻿Param(
-    [parameter(Mandatory = $false)] $clusterCIDR="192.168.0.0/16",
+    [parameter(Mandatory = $false)] $clusterCIDR="10.244.0.0/16",
     [parameter(Mandatory = $true)] $ManagementIP
 )
 
@@ -17,7 +17,7 @@ function DownloadCniBinaries()
     md C:\etc\kube-flannel -ErrorAction Ignore
 
     DownloadFile -Url "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/overlay/cni/config/cni.conf" -Destination $BaseDir\cni\config\cni.conf 
-    DownloadFile -Url "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/overlay/cni/win-overlay.exe" -Destination $BaseDir\cni\win-overlay.exe
+    # DownloadFile -Url "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/overlay/cni/win-overlay.exe" -Destination $BaseDir\cni\win-overlay.exe
     DownloadFile -Url "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/l2bridge/cni/flannel.exe" -Destination $BaseDir\cni\flannel.exe
     DownloadFile -Url "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/l2bridge/cni/host-local.exe" -Destination $BaseDir\cni\host-local.exe
     if (!(Test-Path C:\etc\kube-flannel\net-conf.json))
@@ -31,8 +31,8 @@ function DownloadWindowsKubernetesScripts()
 {
     Write-Host "Downloading Windows Kubernetes scripts"
     DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1 -Destination $BaseDir\hns.psm1
-    DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/InstallImages.ps1 -Destination $BaseDir\InstallImages.ps1
-    DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/Dockerfile -Destination $BaseDir\Dockerfile
+    # DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/InstallImages.ps1 -Destination $BaseDir\InstallImages.ps1
+    # DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/Dockerfile -Destination $BaseDir\Dockerfile
     DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/stop.ps1 -Destination $BaseDir\Stop.ps1
     DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/overlay/start-kubelet.ps1 -Destination $BaseDir\start-Kubelet.ps1
     DownloadFile -Url https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/overlay/start-kubeproxy.ps1 -Destination $BaseDir\start-Kubeproxy.ps1
@@ -57,7 +57,7 @@ ipmo $helper
 DownloadAllFiles
 
 # Prepare POD infra Images
-start powershell $BaseDir\InstallImages.ps1
+# start powershell $BaseDir\InstallImages.ps1
 
 # Prepare Network & Start Infra services
 $NetworkMode = "Overlay"
@@ -75,7 +75,7 @@ ipmo C:\k\hns.psm1 -DisableNameChecking
 # Create a L2Bridge to trigger a vSwitch creation. Do this only once
 if(!(Get-HnsNetwork | ? Name -EQ "External"))
 {
-    New-HNSNetwork -Type $NetworkMode -AddressPrefix "192.168.255.0/30" -Gateway "192.168.255.1" -Name "External" -SubnetPolicies @(@{Type = "VSID"; VSID = 9999; })  -Verbose
+    New-HNSNetwork -Type $NetworkMode -AddressPrefix "10.244.255.0/30" -Gateway "10.244.255.1" -Name "External" -SubnetPolicies @(@{Type = "VSID"; VSID = 9999; })  -Verbose
     Start-Sleep 10
 }
 

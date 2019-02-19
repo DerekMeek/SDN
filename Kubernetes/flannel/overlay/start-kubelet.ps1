@@ -1,14 +1,14 @@
 Param(
-    $clusterCIDR="192.168.0.0/16",
+    $clusterCIDR="10.244.0.0/16",
     $NetworkName = "vxlan0",
     [switch] $RegisterOnly
 )
 
-$NetworkMode = "Overlay"
+$NetworkMode = "vxlan0"
 # Todo : Get these values using kubectl
 $KubeDnsSuffix ="default.svc.cluster.local"
 $KubeDnsServiceIp="11.0.0.10"
-$serviceCIDR="11.0.0.0/8"
+$serviceCIDR="10.96.0.0/12"
 
 $WorkingDir = "c:\k"
 $CNIPath = [Io.path]::Combine($WorkingDir , "cni")
@@ -24,17 +24,17 @@ Update-CNIConfig($podCIDR)
   "name": "<NetworkMode>",
   "type": "flannel",
   "delegate": {
-     "type": "win-overlay",
+     "type": "sdnoverlay",
       "dns" : {
         "Nameservers" : [ "11.0.0.10" ],
         "Search": [ "default.svc.cluster.local" ]
       },
       "Policies" : [
         {
-          "Name" : "EndpointPolicy", "Value" : { "Type" : "OutBoundNAT", "ExceptionList": [ "<ClusterCIDR>", "<ServerCIDR>" ] }
+          "Name" : "EndpointPolicy", "Value" : { "Type" : "OutBoundNAT", "ExceptionList": [ "<ClusterCIDR>", "<ServiceCIDR>" ] }
         },
         {
-          "Name" : "EndpointPolicy", "Value" : { "Type" : "ROUTE", "DestinationPrefix": "<ServerCIDR>", "NeedEncap" : true }
+          "Name" : "EndpointPolicy", "Value" : { "Type" : "ROUTE", "DestinationPrefix": "<ServiceCIDR>", "NeedEncap" : true }
         }
       ]
     }
@@ -44,7 +44,7 @@ Update-CNIConfig($podCIDR)
     $configJson =  ConvertFrom-Json $jsonSampleConfig
     $configJson.type = "flannel"
     $configJson.name = $NetworkName
-    $configJson.delegate.type = "win-overlay"
+    $configJson.delegate.type = "sdnoverlay"
     $configJson.delegate.dns.Nameservers[0] = $KubeDnsServiceIp
     $configJson.delegate.dns.Search[0] = $KubeDnsSuffix
 

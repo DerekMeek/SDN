@@ -34,21 +34,6 @@ go get
 echo "Building containerd-shim-runhcs-v1"
 go build -o /out/containerd-shim-runhcs-v1.exe .
 
-#wincni
-cd /go/src/github.com/
-mkdir -p Microsoft
-cd Microsoft/
-git clone https://github.com/SaswatB/windows-container-networking.git
-cd windows-container-networking/
-git checkout v2flowinv1
-cd cni/
-echo "Getting dependencies"
-go get
-cd ..
-echo "Building wincni"
-make
-mv out/wincni.exe /out/
-
 #host-local
 cd /go/src/github.com/
 mkdir -p containernetworking

@@ -7,6 +7,7 @@ You will need to build the following binaries and copy them to the specified fol
 * `containerd.exe`
   * https://github.com/jterry75/cri/tree/windows_port/cmd/containerd
   * `C:\Program Files\containerd`
+  * This is a temporary location for CRI/Containerd's Windows port and is currently in the process of being upstreamed
 * `ctr.exe`
   * https://github.com/containerd/cri/tree/master/cmd/ctr
   * `C:\Program Files\containerd`
